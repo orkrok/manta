@@ -27,7 +27,7 @@ const Home = () => {
         {/* text */}
         <div className="w-full xl:w-[550px] flex flex-col items-center xl:items-start text-center xl:text-left">
           <h1 className="h1 flex-1 mb-[28px]">
-            Hi! I'm Jake, <br />
+            Hi! I'm Ju-Hyeok, <br />
             <TypeAnimation
               sequence={["Web Developer", 2000, "Web Designer", 2000]}
               wrapper="span"
