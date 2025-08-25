@@ -54,7 +54,7 @@ const Contact = () => {
                   <span className="text-accent">
                     <HiOutlineMail className="text-2xl" />
                   </span>
-                  <span>jake@gmail.com</span>
+                  <span>orkr@gmail.com</span>
                 </div>
                 {/* location */}
                 <div className="flex items-center gap-4 text-lg">

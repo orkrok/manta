@@ -13,14 +13,14 @@ const Info = () => {
           <HiOutlineUser className="text-2xl mt-1 text-accent" />
           <div>
             <p className="text-lg">Date of Birth</p>
-            <p>21 June 1996</p>
+            <p>05 June 1995</p>
           </div>
         </div>
         <div className="w-[280px] flex items-start gap-4">
           <HiOutlineMail className="text-2xl mt-1 text-accent" />
           <div>
             <p className="text-lg">Email Address</p>
-            <p>jake@gmail.com</p>
+            <p>orkr@gmail.com</p>
           </div>
         </div>
       </div>
