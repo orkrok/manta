@@ -54,7 +54,7 @@ const About = () => {
                 <p>About me</p>
               </div>
               <h2 className="h2 mb-6">
-                <span className="text-accent">Jake</span> Doe
+                <span className="text-accent">Ju-Hyeok</span> Doe
               </h2>
               <p className="max-w-[540px] mb-12">
                 I focus on crafting visually stunning, user-friendly web
