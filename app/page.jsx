@@ -29,7 +29,7 @@ const Home = () => {
           <h1 className="h1 flex-1 mb-[28px]">
             Hi! I'm Ju-Hyeok, <br />
             <TypeAnimation
-              sequence={["Web Developer", 2000, "Web Designer", 2000, "Web DevSecOps", 2000]}
+              sequence={["Web Developer", 2000, "Web DevSecOps", 2000]}
               wrapper="span"
               speed={40}
               className="text-accent"
@@ -44,7 +44,7 @@ const Home = () => {
           </p>
           <button className="btn btn-lg btn-accent mb-16">
             <div className="flex items-center gap-3">
-              <span>Let's talk.</span>
+              <h2>Let's talk.</h2>
               <MdArrowOutward className="text-xl" />
             </div>
           </button>
