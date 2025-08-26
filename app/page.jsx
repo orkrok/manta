@@ -28,8 +28,9 @@ const Home = () => {
         <div className="w-full xl:w-[550px] flex flex-col items-center xl:items-start text-center xl:text-left">
           <h1 className="h1 flex-1 mb-[28px]">
             Hi! I'm Ju-Hyeok, <br />
+            Web De
             <TypeAnimation
-              sequence={["Web Developer", 2000, "Web DevSecOps", 2000, "Web Designer", 2000, () => {}]}
+              sequence={["veloper", 2000, "vSecOps", 2000, "signer", 2000, () => {}]}
               wrapper="span"
               speed={40}
               className="text-accent"
