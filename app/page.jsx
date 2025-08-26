@@ -15,6 +15,8 @@ import ChatSample from "@/components/Chat";
 
 const Home = () => {
   return (
+    <>
+    <ChatFloating />
     <motion.section
       initial={{ opacity: 0 }}
       animate={{
@@ -93,6 +95,7 @@ const Home = () => {
         </div>
       </div>
     </motion.section>
+    </>
   );
 };
 
