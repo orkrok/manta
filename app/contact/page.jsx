@@ -61,7 +61,7 @@ const Contact = () => {
                   <span className="text-accent">
                     <HiOutlineMapPin className="text-2xl" />
                   </span>
-                  <span>255 Street, UK</span>
+                  <span>Chicago, USA</span>
                 </div>
               </div>
             </div>
@@ -118,9 +118,10 @@ const Contact = () => {
                       <SelectValue placeholder="Choose here" />
                     </SelectTrigger>
                     <SelectContent className="bg-black border-white/20">
-                      <SelectItem value="webdev">Web Development</SelectItem>
-                      <SelectItem value="uiux">UI & UX Design</SelectItem>
-                      <SelectItem value="logo">Logo Design</SelectItem>
+                      <SelectItem value="webdev">Network</SelectItem>
+                      <SelectItem value="uiux">Server</SelectItem>
+                      <SelectItem value="logo">Cloud</SelectItem>
+                      <SelectItem value="secu">Security</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

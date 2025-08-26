@@ -37,7 +37,7 @@ const Info = () => {
           <HiOutlineLocationMarker className="text-2xl mt-1 text-accent" />
           <div>
             <p className="text-lg">Location</p>
-            <p>Berlin, Germany</p>
+            <p>Chicago, USA</p>
           </div>
         </div>
       </div>
