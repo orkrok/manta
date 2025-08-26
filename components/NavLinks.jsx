@@ -29,7 +29,29 @@ const links = [
 
 const NavLinks = ({ containerStyles }) => {
   const pathname = usePathname();
-  return (
+
+
+  // ✅ 여기가 적절한 위치
+  React.useEffect(() => {
+    const handleMessage = (event) => {
+      // 무거운 연산은 setTimeout으로 분리
+      setTimeout(() => {
+        console.log("Received message:", event.data);
+        // 필요한 작업 수행
+      }, 0);
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    // cleanup
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+
+
+
+
+return (
     <ul className={containerStyles}>
       {links.map((link, index) => {
         // determine if the current link matches the active route
@@ -38,7 +60,7 @@ const NavLinks = ({ containerStyles }) => {
         const charLength = link.name.length;
         // set the line with based on character length
         const lineWidth = charLength > 5 ? "after:w-[120%]" : "after:w-[90%]";
-        console.log(charLength);
+        // console.log(charLength);
         return (
           <Link
             href={link.path}

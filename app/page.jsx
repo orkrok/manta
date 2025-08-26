@@ -85,17 +85,19 @@ const Home = () => {
           <Image
             src={avatarImg}
             alt=""
-            width={440}
+            style={{ width:"auto"}}
             height={600}
             quality={100}
-            className="absolute -top-16 left-[120px]"
+            priority
+            className="absolute bottom-0 left-[120px]"
           />
           {/* overlay gradient */}
-          <div className="w-full h-full absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary via-primary/90 to-primary/40"></div>
+          <div className="w-auto h-[32%] absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary via-primary/90 to-primary/40"></div>
         </div>
       </div>
     </motion.section>
     </>
+
   );
 };
 

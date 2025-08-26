@@ -81,7 +81,7 @@ export default function ChatSample() {
         {
           id: crypto.randomUUID(),
           user: "bot",
-          name: "ChatBot",
+          name: "J",
           text: `\uD83D\uDEA8 데모 응답: '${text}' 에 대한 처리가 완료되었어요!`,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
@@ -104,14 +104,14 @@ export default function ChatSample() {
       {/* 헤더 */}
       <div className="flex items-center justify-between gap-2 rounded-t-3xl border-b border-black/5 bg-white/70 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-zinc-900/60">
         <div className="flex items-center gap-3">
-          <Avatar name="ChatBot" />
+          <Avatar name="J" />
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">ChatBot</h2>
+              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Ju-Hyeok</h2>
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-xs text-zinc-500 dark:text-zinc-400">online</span>
             </div>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">샘플 채팅 레이아웃 • Enter 전송, Shift+Enter 줄바꿈</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">Enter 전송, Shift+Enter 줄바꿈</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export default function ChatSample() {
       </div>
 
       {/* 메시지 영역 */}
-      <div ref={scrollRef} className="custom-scrollbar h-[480px] space-y-4 overflow-y-auto px-4 py-4">
+      <div ref={scrollRef} className="custom-scrollbar h-[480px] space-y-4 overflow-y-auto px-4 py-2">
         {messages.map((m) => (
           <div key={m.id} className={`flex items-end gap-2 ${m.user === "me" ? "justify-end" : ""}`}>
             {m.user === "bot" && <Avatar name={m.name} />}
@@ -141,7 +141,7 @@ export default function ChatSample() {
               <Bubble me={m.user === "me"} text={m.text} />
               <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{m.time}</span>
             </div>
-            {m.user === "me" && <div className="h-10 w-10" />}
+            {m.user === "me" && null}
           </div>
         ))}
 
@@ -153,7 +153,7 @@ export default function ChatSample() {
               exit={{ opacity: 0 }}
               className="flex items-center gap-2"
             >
-              <Avatar name="ChatBot" />
+              <Avatar name="J" />
               <div className="flex items-center gap-1 rounded-2xl bg-white/90 px-3 py-2 ring-1 ring-black/5 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-white/10">
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-500 [animation-delay:-200ms]" />
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-500 [animation-delay:-100ms]" />
@@ -195,7 +195,7 @@ export default function ChatSample() {
       {/* 커스텀 스크롤바 (선택) */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #5810ff; border-radius: 9999px; }
         .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       `}</style>
