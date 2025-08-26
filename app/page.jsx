@@ -10,6 +10,8 @@ import Image from "next/image";
 import avatarImg from "@/public/assets/avatar.png";
 import Socials from "@/components/Socials";
 import Pattern from "@/components/Pattern";
+import ChatFloating from "@/components/Chatfloat";
+import ChatSample from "@/components/Chat";
 
 const Home = () => {
   return (
