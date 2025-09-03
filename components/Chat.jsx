@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Smile, Search, MoreVertical, Moon, Sun } from "lucide-react";
 
-// 기본 아바타 이니셜 렌더러
+// 기본 아바타 렌더러
 function Avatar({ name }) {
   const initials = useMemo(() => {
     const parts = name.trim().split(" ");
@@ -30,31 +30,25 @@ function Bubble({ me, text }) {
           ? "bg-gradient-to-br from-indigo-500 to-sky-500 text-white"
           : "bg-white/90 text-gray-800 ring-1 ring-black/5 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-white/10"
       }`}
-    style={{ wordBreak: "break-all" }}
+      style={{ wordBreak: "break-all" }}
     >
       {text}
     </motion.div>
   );
 }
 
-// 메인 컴포넌트 (Next.js / CRA 어디서든 사용 가능)
 export default function ChatSample() {
   const [dark, setDark] = useState(true);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([{
-    id: crypto.randomUUID(),
-    user: "bot",
-    name: "J",
-    text: "안녕하세요! 무엇을 도와드릴까요?",
-    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  },
-  {
-    id: crypto.randomUUID(),
-    user: "me",
-    name: "우주혁",
-    text: "채팅 레이아웃 샘플 보여줘",
-    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  }]);
+  const [messages, setMessages] = useState([
+    {
+      id: crypto.randomUUID(),
+      user: "bot",
+      name: "J",
+      text: "안녕하세요! 무엇을 도와드릴까요?",
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
+  ]);
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef(null);
 
@@ -64,43 +58,60 @@ export default function ChatSample() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing]);
 
-  function sendMessage() {
-    const text = input.trim().replace(/\n/g, " ");
+  const sendMessage = async () => {
+    const text = input.trim();
     if (!text) return;
 
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const myMsg = { id: crypto.randomUUID(), user: "me", name: "우주혁", text, time: now };
     setMessages((m) => [...m, myMsg]);
     setInput("");
-
-    // typing indicator + 봇 응답 샘플
     setTyping(true);
-    const timeout = setTimeout(() => {
+
+    try {
+      const res = await fetch("http://localhost:5000/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "Ju-hyeok", message: text }),
+      });
+      const data = await res.json();
       setMessages((m) => [
         ...m,
         {
           id: crypto.randomUUID(),
           user: "bot",
           name: "J",
-          text: `\uD83D\uDEA8 데모 응답: '${text}' 에 대한 처리가 완료되었어요!`,
+          text: data.response,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
+    } catch (err) {
+      console.error(err);
+      setMessages((m) => [
+        ...m,
+        {
+          id: crypto.randomUUID(),
+          user: "bot",
+          name: "J",
+          text: "서버와 통신 중 오류가 발생했습니다.",
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
       setTyping(false);
-    }, 700);
+    }
+  };
 
-    return () => clearTimeout(timeout);
-  }
-
-  function onKeyDown(e) {
+  // Enter → 전송, Shift+Enter → 줄바꿈
+  const onKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
-  }
+  };
 
   return (
-    <div className={`${dark ? "dark" : ""} h-[640px] w-full max-w-3xl rounded-3xl border border-black/10 bg-zinc-50 shadow-2xl shadow-black/5 dark:border-white/10 dark:bg-zinc-900`}>      
+    <div className={`${dark ? "dark" : ""} h-[640px] w-full max-w-3xl rounded-3xl border border-black/10 bg-zinc-50 shadow-2xl shadow-black/5 dark:border-white/10 dark:bg-zinc-900`}>
       {/* 헤더 */}
       <div className="flex items-center justify-between gap-2 rounded-t-3xl border-b border-black/5 bg-white/70 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-zinc-900/60">
         <div className="flex items-center gap-3">
@@ -115,18 +126,9 @@ export default function ChatSample() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="search">
-            <Search className="h-5 w-5" />
-          </button>
-          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="more">
-            <MoreVertical className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => setDark((d) => !d)}
-            className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            aria-label="toggle theme"
-            title="Toggle theme"
-          >
+          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Search className="h-5 w-5" /></button>
+          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><MoreVertical className="h-5 w-5" /></button>
+          <button onClick={() => setDark(d => !d)} className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
             {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
         </div>
@@ -141,18 +143,11 @@ export default function ChatSample() {
               <Bubble me={m.user === "me"} text={m.text} />
               <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{m.time}</span>
             </div>
-            {m.user === "me" && null}
           </div>
         ))}
-
         <AnimatePresence>
           {typing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-2"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
               <Avatar name="J" />
               <div className="flex items-center gap-1 rounded-2xl bg-white/90 px-3 py-2 ring-1 ring-black/5 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-white/10">
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-500 [animation-delay:-200ms]" />
@@ -166,13 +161,8 @@ export default function ChatSample() {
 
       {/* 입력창 */}
       <div className="flex items-end gap-2 rounded-b-3xl border-t border-black/5 bg-white/70 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-zinc-900/60">
-        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="attach">
-          <Paperclip className="h-5 w-5" />
-        </button>
-        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="emoji">
-          <Smile className="h-5 w-5" />
-        </button>
-
+        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Paperclip className="h-5 w-5" /></button>
+        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Smile className="h-5 w-5" /></button>
         <div className="relative flex-1">
           <textarea
             value={input}
@@ -182,17 +172,10 @@ export default function ChatSample() {
             placeholder="메시지를 입력하세요…"
             className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0 placeholder:text-zinc-400 focus:border-indigo-400 dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-100"
           />
-          <button
-            onClick={sendMessage}
-            className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"
-            aria-label="send"
-          >
-            <Send className="h-5 w-5" />
-          </button>
+          <button onClick={sendMessage} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"><Send className="h-5 w-5" /></button>
         </div>
       </div>
 
-      {/* 커스텀 스크롤바 (선택) */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #5810ff; border-radius: 9999px; }
