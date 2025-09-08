@@ -50,6 +50,8 @@ export default function ChatSample() {
     },
   ]);
   const [typing, setTyping] = useState(false);
+  const [threadId, setThreadId] = useState(null);
+  const assistantId = process.env.NEXT_PUBLIC_OPENAI_ASSISTANT_ID;
   const scrollRef = useRef(null);
 
   // 새 메시지 올 때 자동 스크롤
@@ -57,6 +59,14 @@ export default function ChatSample() {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing]);
+
+  // thread_id 복원
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("assistant_thread_id");
+      if (saved) setThreadId(saved);
+    } catch (_) {}
+  }, []);
 
   const sendMessage = async () => {
     const text = input.trim();
@@ -72,16 +82,25 @@ export default function ChatSample() {
       const res = await fetch("http://localhost:5000/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "Ju-hyeok", message: text }),
+        body: JSON.stringify({
+          username: "Ju-hyeok",
+          message: text,
+          assistant_id: assistantId || undefined,
+          thread_id: threadId || undefined,
+        }),
       });
       const data = await res.json();
+      if (data?.thread_id && data.thread_id !== threadId) {
+        setThreadId(data.thread_id);
+        try { localStorage.setItem("assistant_thread_id", data.thread_id); } catch (_) {}
+      }
       setMessages((m) => [
         ...m,
         {
           id: crypto.randomUUID(),
           user: "bot",
           name: "J",
-          text: data.response,
+          text: data.bot_reply,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
