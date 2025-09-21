@@ -69,7 +69,7 @@ export default function ChatSample() {
     setTyping(true);
 
     try {
-      const res = await fetch("https://orkr.shop:5000/sendMessage", {
+      const res = await fetch("https://api.orkr.shop:5000/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: "Ju-hyeok", message: text }),
