@@ -81,7 +81,7 @@ export default function ChatSample() {
           id: crypto.randomUUID(),
           user: "bot",
           name: "J",
-          text: data.response,
+          text: data.reply,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
