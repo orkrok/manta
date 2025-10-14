@@ -184,4 +184,5 @@ export default function ChatSample() {
             onKeyDown={onKeyDown}
             rows={1}
             placeholder="메시지를 입력하세요…"
-            className="block w-full resize-none rounded-2xl border border-black/10 bg
+            className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0 placeholder:text-zinc-400 focus:border-indigo-400 dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-100"
+/>
