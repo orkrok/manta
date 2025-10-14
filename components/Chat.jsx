@@ -10,6 +10,7 @@ function Avatar({ name }) {
     const second = parts[1]?.[0] ?? "";
     return (first + second).toUpperCase();
   }, [name]);
+
   return (
     <div className="flex h-10 w-10 select-none items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 text-sm font-semibold text-white shadow">
       {initials}
@@ -54,13 +55,11 @@ export default function ChatSample() {
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef(null);
 
-  // 새 메시지 올 때 자동 스크롤
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing]);
 
-  // === 메시지 전송 ===
   const sendMessage = async () => {
     const text = input.trim();
     if (!text) return;
@@ -86,7 +85,7 @@ export default function ChatSample() {
           user: "bot",
           name: "J",
           text: data.bot_reply,
-          recommend_questions: data.recommend_questions || [], // 추천 질문 추가
+          recommend_questions: data.recommend_questions || [],
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -108,7 +107,6 @@ export default function ChatSample() {
     }
   };
 
-  // Enter → 전송, Shift+Enter → 줄바꿈
   const onKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -134,7 +132,7 @@ export default function ChatSample() {
         <div className="flex items-center gap-2">
           <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Search className="h-5 w-5" /></button>
           <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><MoreVertical className="h-5 w-5" /></button>
-          <button onClick={() => setDark(d => !d)} className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+          <button onClick={() => setDark((d) => !d)} className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
             {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
         </div>
@@ -147,7 +145,6 @@ export default function ChatSample() {
             {m.user === "bot" && <Avatar name={m.name} />}
             <div className={`flex max-w-[85%] flex-col ${m.user === "me" ? "items-end" : "items-start"}`}>
               <Bubble me={m.user === "me"} text={m.text} />
-              {/* 추천 질문 렌더링 */}
               {m.recommend_questions && m.recommend_questions.length > 0 && (
                 <ul className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside">
                   {m.recommend_questions.map((q, i) => (
@@ -184,5 +181,11 @@ export default function ChatSample() {
             onKeyDown={onKeyDown}
             rows={1}
             placeholder="메시지를 입력하세요…"
-            className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0 placeholder:text-zinc-400 focus:border-indigo-400 dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-100"
-/>
+            className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0"
+          />
+          <button onClick={sendMessage} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"><Send className="h-5 w-5" /></button>
+        </div>
+      </div>
+    </div>
+  );
+}
