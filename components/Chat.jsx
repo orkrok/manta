@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Smile, Search, MoreVertical, Moon, Sun } from "lucide-react";
 
-// 기본 아바타 렌더러
+// === 아바타 컴포넌트 ===
 function Avatar({ name }) {
   const initials = useMemo(() => {
     const parts = name.trim().split(" ");
@@ -17,7 +17,7 @@ function Avatar({ name }) {
   );
 }
 
-// 말풍선
+// === 말풍선 컴포넌트 ===
 function Bubble({ me, text }) {
   return (
     <motion.div
@@ -37,6 +37,7 @@ function Bubble({ me, text }) {
   );
 }
 
+// === 메인 채팅 컴포넌트 ===
 export default function ChatSample() {
   const [dark, setDark] = useState(true);
   const [input, setInput] = useState("");
@@ -46,6 +47,7 @@ export default function ChatSample() {
       user: "bot",
       name: "J",
       text: "안녕하세요! 무엇을 도와드릴까요?",
+      recommend_questions: [],
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -58,12 +60,13 @@ export default function ChatSample() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing]);
 
+  // === 메시지 전송 ===
   const sendMessage = async () => {
     const text = input.trim();
     if (!text) return;
 
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const myMsg = { id: crypto.randomUUID(), user: "me", name: "우주혁", text, time: now };
+    const myMsg = { id: crypto.randomUUID(), user: "me", name: "우주혁", text, recommend_questions: [], time: now };
     setMessages((m) => [...m, myMsg]);
     setInput("");
     setTyping(true);
@@ -72,9 +75,10 @@ export default function ChatSample() {
       const res = await fetch("https://aws.orkr.shop/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "Ju-hyeok", message: text }),
+        body: JSON.stringify({ username: "Ju-Hyeok", message: text }),
       });
       const data = await res.json();
+
       setMessages((m) => [
         ...m,
         {
@@ -82,6 +86,7 @@ export default function ChatSample() {
           user: "bot",
           name: "J",
           text: data.bot_reply,
+          recommend_questions: data.recommend_questions || [], // 추천 질문 추가
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -94,6 +99,7 @@ export default function ChatSample() {
           user: "bot",
           name: "J",
           text: "서버와 통신 중 오류가 발생했습니다.",
+          recommend_questions: [],
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -141,6 +147,14 @@ export default function ChatSample() {
             {m.user === "bot" && <Avatar name={m.name} />}
             <div className={`flex max-w-[85%] flex-col ${m.user === "me" ? "items-end" : "items-start"}`}>
               <Bubble me={m.user === "me"} text={m.text} />
+              {/* 추천 질문 렌더링 */}
+              {m.recommend_questions && m.recommend_questions.length > 0 && (
+                <ul className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside">
+                  {m.recommend_questions.map((q, i) => (
+                    <li key={i}>{q}</li>
+                  ))}
+                </ul>
+              )}
               <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{m.time}</span>
             </div>
           </div>
@@ -170,18 +184,4 @@ export default function ChatSample() {
             onKeyDown={onKeyDown}
             rows={1}
             placeholder="메시지를 입력하세요…"
-            className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0 placeholder:text-zinc-400 focus:border-indigo-400 dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-100"
-          />
-          <button onClick={sendMessage} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"><Send className="h-5 w-5" /></button>
-        </div>
-      </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #5810ff; border-radius: 9999px; }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      `}</style>
-    </div>
-  );
-}
+            className="block w-full resize-none rounded-2xl border border-black/10 bg
