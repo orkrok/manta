@@ -2,111 +2,97 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import time
-from dotenv import load_dotenv
 from openai import OpenAI
+from pymongo import MongoClient
+import json
 
-print("KEY from env:", os.getenv("OPENAI_API_KEY"))
-# 1. 환경 변수 로드
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OpenAI API 키가 설정되지 않았습니다. .env 확인하세요.")
-
-# 2. Flask 앱과 CORS 설정
+# === 기본 설정 ===
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app)
 
-# 3. OpenAI 클라이언트 생성
-client = OpenAI(api_key=api_key)
+client_ai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+mongo_client = MongoClient(os.getenv("MONGO_URI"))
+db = mongo_client.get_database()
+messages_collection = db["messages"]
 
-assistant_id_from_env = os.getenv("OPENAI_ASSISTANT_ID")
+RESUME_TEXT = """
+이름: 우주혁
+직무: 클라우드 보안 엔지니어
+현 직장: Cinamon
+기술: AWS, Linux, Palo Alto-XDR, Python, Docker, K8S
+자격증: 리눅스마스터 2급, 네트워크관리사 2급, Azure-900, 정보처리기사 필기 합격
+교육 이수 : KT클라우드와 NHN클라우드로 완성하는 클라우드 엔지니어 과정
+인턴 : 가상화 기술지원 - 소만사
+외국어 : TOEIC 940 (24.10)
+경험: SK Innovation XDR 기술지원 / 무신사 프로젝트
+"""
 
-# 4. Assistants API 기반 채팅 엔드포인트
-@app.route('/sendMessage', methods=['POST'])
+# === POST: 메시지 전송 ===
+@app.route("/sendMessage", methods=["POST"])
 def send_message():
-    data = request.json
+    data = request.get_json()
     username = data.get("username", "anonymous")
     message = data.get("message", "")
-    provided_assistant_id = data.get("assistant_id")
-    thread_id = data.get("thread_id")
 
-    assistant_id = provided_assistant_id or assistant_id_from_env
-    if not assistant_id:
-        return jsonify({
-            "error": "assistant_id가 없습니다. 요청 바디에 assistant_id를 포함하거나 환경 변수 OPENAI_ASSISTANT_ID를 설정하세요."
-        }), 400
+    prompt = f"""
+아래는 사용자의 이력서입니다:
+{RESUME_TEXT}
+
+위 이력서를 기반으로 다음 질문에 답변하고, 관련된 추천 질문 3개도 제안해주세요.
+
+1. 질문에 대한 대답을 자연스럽게 한국어로 작성
+2. 추천 질문 3개를 JSON 배열로 작성
+3. 반드시 아래 JSON 형태로 응답:
+
+{{
+    "message": "AI의 대답",
+    "recommend_questions": ["질문1", "질문2", "질문3"]
+}}
+
+사용자 질문: "{message}"
+"""
 
     try:
-        # 스레드가 없으면 생성
-        if not thread_id:
-            thread = client.beta.threads.create()
-            thread_id = thread.id
-
-        # 사용자 메시지를 스레드에 추가
-        client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=message
+        response = client_ai.responses.create(
+            model="gpt-4.1-mini",
+            input=[
+                {"role": "system", "content": "너는 이력서 기반으로 나를 설명해주는 비서야."},
+                {"role": "user", "content": prompt}
+            ]
         )
 
-        # Run 생성 및 완료까지 폴링
-        run = client.beta.threads.runs.create(
-            thread_id=thread_id,
-            assistant_id=assistant_id
-        )
+        raw_output = response.output[0].content[0].text
+        try:
+            parsed = json.loads(raw_output)
+        except json.JSONDecodeError:
+            parsed = {"message": raw_output, "recommend_questions": []}
 
-        max_wait_seconds = 60
-        start_time = time.time()
-        while True:
-            run = client.beta.threads.runs.retrieve(
-                thread_id=thread_id,
-                run_id=run.id
-            )
-            if run.status in ["completed", "failed", "cancelled", "expired"]:
-                break
-            if time.time() - start_time > max_wait_seconds:
-                break
-            time.sleep(0.7)
+        # MongoDB 저장
+        messages_collection.insert_one({
+            "username": username,
+            "user_message": message,
+            "bot_reply": parsed.get("message", ""),
+            "recommend_questions": parsed.get("recommend_questions", []),
+            "timestamp": time.time()
+        })
 
-        bot_reply = ""
-        run_status = getattr(run, "status", "unknown")
-
-        if run_status == "completed":
-            messages = client.beta.threads.messages.list(
-                thread_id=thread_id,
-                order="desc",
-                limit=5
-            )
-            # 가장 최근 assistant 메시지 추출
-            assistant_message = next(
-                (m for m in messages.data if m.role == "assistant"),
-                None
-            )
-            if assistant_message and assistant_message.content:
-                # text 파트 추출
-                text_parts = [
-                    part.text.value for part in assistant_message.content
-                    if getattr(part, "type", "") == "text" and getattr(part, "text", None)
-                ]
-                bot_reply = "\n".join(text_parts) if text_parts else ""
-        else:
-            bot_reply = f"Run 상태: {run_status}"
+        # 프론트 응답 (bot_reply 키 사용)
+        return jsonify({
+            "bot_reply": parsed.get("message", ""),
+            "recommend_questions": parsed.get("recommend_questions", [])
+        })
 
     except Exception as e:
-        return jsonify({
-            "error": f"Assistants API 호출 실패: {e}",
-        }), 500
+        return jsonify({"error": str(e)}), 500
 
-    print(f"[{username}] {message} -> {bot_reply}")
+# === GET: 메시지 조회 ===
+@app.route("/getMessages", methods=["GET"])
+def get_messages():
+    try:
+        messages = list(messages_collection.find({}, {"_id": 0}).sort("timestamp", -1).limit(50))
+        return jsonify(messages)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    return jsonify({
-        "username": username,
-        "user_message": message,
-        "bot_reply": bot_reply,
-        "thread_id": thread_id,
-        "run_status": run_status
-    })
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
