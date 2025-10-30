@@ -32,4 +32,4 @@ jobs:
             cd ${{ secrets.EC2_PATH }}
             source venv/bin/activate
             pip install -r requirements.txt
-            sudo systemctl restart flask.service
+            sudo systemctl restart flaskapp.service
