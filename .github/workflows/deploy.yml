@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.deploy_key }}
+          key: ${{ secrets.FLASK_KEY }}
           source: "."
           target: ${{ secrets.EC2_PATH }}
 
@@ -27,7 +27,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.deploy_key }}
+          key: ${{ secrets.FLASK_KEY }}
           script: |
             cd ${{ secrets.EC2_PATH }}
             source venv/bin/activate
