@@ -30,5 +30,6 @@ jobs:
           key: ${{ secrets.FLASK_KEY }}
           script: |
             cd ${{ secrets.EC2_PATH }}
+            sudo systemctl daemo-reload
             sudo systemctl restart flaskapp.service
             sudo systemctl enable flaskapp.service
