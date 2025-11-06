@@ -16,12 +16,33 @@ const RESUME_TEXT = `
 
 // Next.js 15 API Route
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(request) {
   try {
+    // 환경 변수 사전 검증
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'OPENAI_API_KEY가 설정되어 있지 않습니다.' },
+        { status: 500 }
+      );
+    }
+    if (!process.env.MONGO_URI) {
+      return NextResponse.json(
+        { error: 'MONGO_URI가 설정되어 있지 않습니다.' },
+        { status: 500 }
+      );
+    }
+
     const data = await request.json();
     const username = data.username || 'anonymous';
     const message = data.message || '';
+    if (!message || typeof message !== 'string') {
+      return NextResponse.json(
+        { error: 'message 필드는 필수이며 문자열이어야 합니다.' },
+        { status: 400 }
+      );
+    }
 
     const client_ai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -59,13 +80,33 @@ ${RESUME_TEXT}
 사용자 질문: "${message}"
 `;
 
-    const response = await client_ai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: '너는 이력서 기반으로 나를 설명해주는 비서야.' },
-        { role: 'user', content: prompt },
-      ],
-    });
+    let response;
+    try {
+      response = await client_ai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: '너는 이력서 기반으로 나를 설명해주는 비서야.' },
+          { role: 'user', content: prompt },
+        ],
+      });
+    } catch (aiError) {
+      // OpenAI 인증/권한 오류라면 401로 반환
+      const msg = aiError?.message || '';
+      if (
+        aiError?.status === 401 ||
+        /api key|unauthorized|invalid api key/i.test(msg)
+      ) {
+        return NextResponse.json(
+          { error: 'OpenAI 인증 실패(401): OPENAI_API_KEY를 확인하세요.' },
+          { status: 401 }
+        );
+      }
+      // 기타 OpenAI 오류는 502로 반환
+      return NextResponse.json(
+        { error: `OpenAI 호출 실패: ${msg || 'Bad Gateway'}` },
+        { status: 502 }
+      );
+    }
 
     const rawOutput = response.choices[0]?.message?.content || '';
     let parsed;
