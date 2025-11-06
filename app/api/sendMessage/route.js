@@ -14,6 +14,9 @@ const RESUME_TEXT = `
 경험: SK Innovation XDR 기술지원 / 무신사 프로젝트
 `;
 
+// Next.js 15 API Route
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   try {
     const data = await request.json();
@@ -25,7 +28,17 @@ export async function POST(request) {
     });
 
     const mongoClient = await clientPromise;
-    const db = mongoClient.db();
+    // MongoDB URI에서 데이터베이스 이름 추출, 없으면 기본값 사용
+    let dbName = process.env.MONGO_DB_NAME;
+    if (!dbName) {
+      try {
+        const uri = new URL(process.env.MONGO_URI);
+        dbName = uri.pathname.slice(1) || 'test';
+      } catch {
+        dbName = 'test';
+      }
+    }
+    const db = mongoClient.db(dbName);
     const messagesCollection = db.collection('messages');
 
     const prompt = `
@@ -77,6 +90,16 @@ ${RESUME_TEXT}
     });
   } catch (error) {
     console.error('Error in sendMessage:', error);
+    
+    // MongoDB 연결 에러인지 확인
+    if (error.message && error.message.includes('Mongo')) {
+      console.error('MongoDB connection error:', error.message);
+      return NextResponse.json(
+        { error: 'MongoDB 연결 오류가 발생했습니다. 환경 변수를 확인해주세요.' },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }
