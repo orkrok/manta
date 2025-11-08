@@ -18,29 +18,85 @@ const RESUME_TEXT = `
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// OPTIONS 메서드 처리 (CORS preflight)
+export async function OPTIONS(request) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
+// GET 메서드 처리 (테스트용)
+export async function GET(request) {
+  return NextResponse.json(
+    { error: '이 엔드포인트는 POST 메서드만 지원합니다.' },
+    { status: 405 }
+  );
+}
+
 export async function POST(request) {
   try {
     // 환경 변수 사전 검증
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
         { error: 'OPENAI_API_KEY가 설정되어 있지 않습니다.' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
     if (!process.env.MONGO_URI) {
       return NextResponse.json(
         { error: 'MONGO_URI가 설정되어 있지 않습니다.' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
 
-    const data = await request.json();
+    let data;
+    try {
+      data = await request.json();
+    } catch (jsonError) {
+      return NextResponse.json(
+        { error: '잘못된 JSON 형식입니다.' },
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
+      );
+    }
     const username = data.username || 'anonymous';
     const message = data.message || '';
     if (!message || typeof message !== 'string') {
       return NextResponse.json(
         { error: 'message 필드는 필수이며 문자열이어야 합니다.' },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
 
@@ -98,13 +154,27 @@ ${RESUME_TEXT}
       ) {
         return NextResponse.json(
           { error: 'OpenAI 인증 실패(401): OPENAI_API_KEY를 확인하세요.' },
-          { status: 401 }
+          { 
+            status: 401,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type',
+            },
+          }
         );
       }
       // 기타 OpenAI 오류는 502로 반환
       return NextResponse.json(
         { error: `OpenAI 호출 실패: ${msg || 'Bad Gateway'}` },
-        { status: 502 }
+        { 
+          status: 502,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
 
@@ -128,6 +198,12 @@ ${RESUME_TEXT}
     return NextResponse.json({
       bot_reply: parsed.message || '',
       recommend_questions: parsed.recommend_questions || [],
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
     });
   } catch (error) {
     console.error('Error in sendMessage:', error);
@@ -137,13 +213,27 @@ ${RESUME_TEXT}
       console.error('MongoDB connection error:', error.message);
       return NextResponse.json(
         { error: 'MongoDB 연결 오류가 발생했습니다. 환경 변수를 확인해주세요.' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
     
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      }
     );
   }
 }
