@@ -30,7 +30,7 @@ const About = () => {
               src="/assets/avatar.png"
               width={320}
               height={496}
-              alt=""
+              alt="ju-hyek's profile"
               className="z-20 relative"
             />
             {/* overlay */}
