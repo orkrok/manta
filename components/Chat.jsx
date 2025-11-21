@@ -130,9 +130,16 @@ export default function ChatSample() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Search className="h-5 w-5" /></button>
-          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><MoreVertical className="h-5 w-5" /></button>
+          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+            <span className="sr-only">검색 열기</span>
+            <Search className="h-5 w-5" />
+          </button>
+          <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+            <span className="sr-only">추가 옵션 열기</span>
+            <MoreVertical className="h-5 w-5" />
+          </button>
           <button onClick={() => setDark((d) => !d)} className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+            <span className="sr-only">{dark ? "라이트 모드로 전환" : "다크 모드로 전환"}</span>
             {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
         </div>
@@ -172,8 +179,14 @@ export default function ChatSample() {
 
       {/* 입력창 */}
       <div className="flex items-end gap-2 rounded-b-3xl border-t border-black/5 bg-white/70 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-zinc-900/60">
-        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Paperclip className="h-5 w-5" /></button>
-        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"><Smile className="h-5 w-5" /></button>
+        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+          <span className="sr-only">파일 첨부</span>
+          <Paperclip className="h-5 w-5" />
+        </button>
+        <button className="rounded-2xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+          <span className="sr-only">이모지 삽입</span>
+          <Smile className="h-5 w-5" />
+        </button>
         <div className="relative flex-1">
           <textarea
             value={input}
@@ -183,7 +196,10 @@ export default function ChatSample() {
             placeholder="메시지를 입력하세요…"
             className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0"
           />
-          <button onClick={sendMessage} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700"><Send className="h-5 w-5" /></button>
+          <button onClick={sendMessage} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700">
+            <span className="sr-only">메시지 전송</span>
+            <Send className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </div>
