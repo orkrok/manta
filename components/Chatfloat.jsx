@@ -1,6 +1,17 @@
+'use client';
+
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { MessageCircle } from "lucide-react";
-import ChatSample from "./Chat"; // 기존 챗봇 컴포넌트
+
+const ChatSample = dynamic(() => import("./Chat"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-[360px] h-[560px] rounded-3xl bg-white/10 text-white flex items-center justify-center">
+      챗봇 로딩 중...
+    </div>
+  ),
+});
 
 export default function ChatFloating() {
   const [open, setOpen] = useState(false);
