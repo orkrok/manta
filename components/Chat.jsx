@@ -48,7 +48,7 @@ export default function ChatSample() {
       user: "bot",
       name: "J",
       text: "안녕하세요! 무엇을 도와드릴까요?",
-      recommend_questions: ["예제 질문 1", "예제 질문 2"],
+      recommend_questions: [],
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
