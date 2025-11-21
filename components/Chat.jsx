@@ -53,6 +53,7 @@ export default function ChatSample() {
     },
   ]);
   const [typing, setTyping] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -73,8 +74,11 @@ export default function ChatSample() {
 
   // === 메시지 전송 ===
   const sendMessage = async (text = input) => {
+    if (isSending) return; // 중복 전송 방지
+    setIsSending(true);
+
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed) { setIsSending(false); return; }
 
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const myMsg = { id: crypto.randomUUID(), user: "me", name: "우주혁", text: trimmed, recommend_questions: [], time: now };
@@ -116,6 +120,7 @@ export default function ChatSample() {
       ]);
     } finally {
       setTyping(false);
+      setIsSending(false);
     }
   };
 
@@ -167,7 +172,14 @@ export default function ChatSample() {
               {m.recommend_questions?.length > 0 && (
                 <ul className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside">
                   {m.recommend_questions.map((q, i) => (
-                    <li key={i} className="cursor-pointer hover:underline" onClick={() => sendMessage(q)}>
+                    <li
+                      key={i}
+                      className="cursor-pointer hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation(); // 클릭 이벤트 버블링 차단
+                        sendMessage(q);
+                      }}
+                    >
                       {q}
                     </li>
                   ))}
