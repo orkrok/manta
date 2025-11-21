@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { MdArrowOutward } from "react-icons/md";
@@ -10,8 +11,20 @@ import Image from "next/image";
 import avatarImg from "@/public/assets/avatar.png";
 import Socials from "@/components/Socials";
 import Pattern from "@/components/Pattern";
-import ChatFloating from "@/components/Chatfloat";
-import ChatSample from "@/components/Chat";
+
+const ChatFloating = dynamic(() => import("@/components/Chatfloat"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const ChatSample = dynamic(() => import("@/components/Chat"), {
+  ssr: false,
+  loading: () => (
+    <div className="mt-10 h-[200px] w-full rounded-3xl border border-white/10 bg-white/5 text-center text-sm text-white/70 flex items-center justify-center">
+      AI 챗봇을 불러오는 중입니다...
+    </div>
+  ),
+});
 
 const Home = () => {
   return (
@@ -33,7 +46,7 @@ const Home = () => {
           <h1 className="h1 flex-1 mb-[28px]">
             Hi! I'm Ju-Hyeok, <br />
             <TypeAnimation
-              sequence={["Web", 2000, "Server", 2000, "Cloud", 2000, "Desgin" , 2000, () => {}]}
+              sequence={["Web", 2000, "Server", 2000, "Cloud", 2000, () => {}]}
               wrapper="span"
               speed={40}
               className="text-accent"
