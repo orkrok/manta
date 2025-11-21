@@ -48,24 +48,36 @@ export default function ChatSample() {
       user: "bot",
       name: "J",
       text: "안녕하세요! 무엇을 도와드릴까요?",
-      recommend_questions: [],
+      recommend_questions: ["예제 질문 1", "예제 질문 2"],
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef(null);
+  const textareaRef = useRef(null);
 
+  // === 스크롤 자동 이동 ===
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing]);
 
-  const sendMessage = async () => {
-    const text = input.trim();
-    if (!text) return;
+  // === textarea 자동 높이 ===
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = "auto";
+      ta.style.height = `${ta.scrollHeight}px`;
+    }
+  }, [input]);
+
+  // === 메시지 전송 ===
+  const sendMessage = async (text = input) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
 
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const myMsg = { id: crypto.randomUUID(), user: "me", name: "우주혁", text, recommend_questions: [], time: now };
+    const myMsg = { id: crypto.randomUUID(), user: "me", name: "우주혁", text: trimmed, recommend_questions: [], time: now };
     setMessages((m) => [...m, myMsg]);
     setInput("");
     setTyping(true);
@@ -74,7 +86,7 @@ export default function ChatSample() {
       const res = await fetch("/api/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "Ju-Hyeok", message: text }),
+        body: JSON.stringify({ username: "Ju-Hyeok", message: trimmed }),
       });
       const data = await res.json();
 
@@ -84,7 +96,7 @@ export default function ChatSample() {
           id: crypto.randomUUID(),
           user: "bot",
           name: "J",
-          text: data.bot_reply,
+          text: data.bot_reply || "응답이 없습니다.",
           recommend_questions: data.recommend_questions || [],
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
@@ -152,10 +164,12 @@ export default function ChatSample() {
             {m.user === "bot" && <Avatar name={m.name} />}
             <div className={`flex max-w-[85%] flex-col ${m.user === "me" ? "items-end" : "items-start"}`}>
               <Bubble me={m.user === "me"} text={m.text} />
-              {m.recommend_questions && m.recommend_questions.length > 0 && (
+              {m.recommend_questions?.length > 0 && (
                 <ul className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside">
                   {m.recommend_questions.map((q, i) => (
-                    <li key={i}>{q}</li>
+                    <li key={i} className="cursor-pointer hover:underline" onClick={() => sendMessage(q)}>
+                      {q}
+                    </li>
                   ))}
                 </ul>
               )}
@@ -165,7 +179,7 @@ export default function ChatSample() {
         ))}
         <AnimatePresence>
           {typing && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2 max-w-[60%]">
               <Avatar name="J" />
               <div className="flex items-center gap-1 rounded-2xl bg-white/90 px-3 py-2 ring-1 ring-black/5 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-white/10">
                 <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-500 [animation-delay:-200ms]" />
@@ -189,6 +203,7 @@ export default function ChatSample() {
         </button>
         <div className="relative flex-1">
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
@@ -196,7 +211,7 @@ export default function ChatSample() {
             placeholder="메시지를 입력하세요…"
             className="block w-full resize-none rounded-2xl border border-black/10 bg-white/90 px-4 py-3 pr-12 text-[15px] leading-6 outline-none ring-0"
           />
-          <button onClick={sendMessage} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700">
+          <button onClick={() => sendMessage()} className="absolute bottom-1.5 right-1.5 rounded-xl p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700">
             <span className="sr-only">메시지 전송</span>
             <Send className="h-5 w-5" />
           </button>
