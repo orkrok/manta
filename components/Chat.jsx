@@ -176,8 +176,9 @@ export default function ChatSample() {
                       key={i}
                       className="cursor-pointer hover:underline"
                       onClick={(e) => {
-                        e.stopPropagation(); // 클릭 이벤트 버블링 차단
-                        sendMessage(q);
+                        e.stopPropagation();
+                        setInput(q);                 // 전송 없이 입력창에 채우기
+                        textareaRef.current?.focus(); // 입력창 포커스
                       }}
                     >
                       {q}
