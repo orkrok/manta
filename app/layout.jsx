@@ -10,6 +10,9 @@ import Header from "@/components/Header";
 const sometypeMono = Sometype_Mono({
   variable: "--font-sometypeMono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  fallback: ["monospace"],
 });
 
 export const metadata = {
@@ -25,6 +28,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />        
+      </head>
       <body
         className={`${sometypeMono.variable} antialiased overflow-hidden relative`}
       >
