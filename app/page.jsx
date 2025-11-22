@@ -97,11 +97,11 @@ const Home = () => {
           {/* avatar img */}
           <Image
             src={avatarImg}
-            alt=""
+            alt="avatar"
             style={{ width:"auto"}}
             height={600}
-            quality={100}
-            priority
+            quality={80}
+            loading="lazy"
             className="absolute bottom-0 left-[120px]"
           />
           {/* overlay gradient */}
