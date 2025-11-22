@@ -22,7 +22,8 @@ export const metadata = {
   openGraph: {
     title: "우주혁 포트폴리오",
     description: "클라우드 엔지니어링 프로젝트와 경력 소개",
-    url: "https://orkr.shop"
+    url: "https://orkr.shop" 
+  }
 };
 
 export default function RootLayout({ children }) {
