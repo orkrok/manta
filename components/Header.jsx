@@ -1,6 +1,7 @@
 // components
 import Logo from "./Logo";
 import Socials from "./Socials";
+import AuthButton from "./AuthButton";
 import { CiMenuFries } from "react-icons/ci";
 import { MdFileDownload } from "react-icons/md";
 
@@ -22,6 +23,10 @@ const Header = () => {
         <div className="flex items-center justify-between py-6">
           {/* logo */}
           <Logo />
+          {/* auth button */}
+          <div className="hidden md:block">
+            <AuthButton />
+          </div>
           {/* nav mobile - (Sheet Component) */}
           <Sheet>
             <SheetTrigger 
@@ -43,6 +48,9 @@ const Header = () => {
               </SheetHeader>
               <NavLinks containerStyles="flex flex-col gap-8 max-w-[100px]" />
               <div>
+                <div className="mb-4">
+                  <AuthButton />
+                </div>
                 <button className="btn btn-lg btn-tertiary mb-16">
                   <div className="flex items-center gap-3">
                     <span>Download CV</span>
