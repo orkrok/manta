@@ -36,8 +36,7 @@ const Contact = () => {
                   Get In <span className="text-accent">Touch</span>
                 </h2>
                 <p className="max-w-[460px]">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nesciunt, ex.
+                  죽을 때 까지 공부하자
                 </p>
               </div>
               {/* info */}
@@ -47,21 +46,21 @@ const Contact = () => {
                   <span className="text-accent">
                     <HiOutlinePhone className="text-2xl" />
                   </span>
-                  <span>+11 22 33 44 55</span>
+                  <span>+82 010 7354 959- </span>
                 </div>
                 {/* email */}
                 <div className="flex items-center gap-4 text-lg">
                   <span className="text-accent">
                     <HiOutlineMail className="text-2xl" />
                   </span>
-                  <span>orkr@gmail.com</span>
+                  <span>zeano1215@gmail.com</span>
                 </div>
                 {/* location */}
                 <div className="flex items-center gap-4 text-lg">
                   <span className="text-accent">
                     <HiOutlineMapPin className="text-2xl" />
                   </span>
-                  <span>Chicago, USA</span>
+                  <span>Seoul, Republic Of Korea</span>
                 </div>
               </div>
             </div>
