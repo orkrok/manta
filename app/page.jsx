@@ -46,7 +46,7 @@ const Home = () => {
           <h1 className="h1 flex-1 mb-[28px]">
             Hi! I'm Ju-Hyeok, <br />
             <TypeAnimation
-              sequence={["Web", 2000, "Server", 2000, "Cloud", 2000, () => {}]}
+              sequence={["Cloud", 2000, "Security", 2000, "Server", 2000, () => {}]}
               wrapper="span"
               speed={40}
               className="text-accent"
@@ -56,9 +56,7 @@ const Home = () => {
             {" "}DevSecOps
           </h1>
           <p className="max-w-[500px] mb-[44px]">
-            I build visually captivating, user-friendly websites and web apps
-            that transform your ideas into seamless, engaging digital
-            experiences.
+            죽을 때 까지 공부하겠습니다
           </p>
           <button className="btn btn-lg btn-accent mb-16">
             <div className="flex items-center gap-3">
@@ -73,14 +71,14 @@ const Home = () => {
               <span className="text-accent">
                 <HiOutlinePhone className="text-xl" />
               </span>
-              <span>+40 22 33 44 55</span>
+              <span>+82 010 7354 959- </span>
             </div>
             {/* mail */}
             <div className="flex items-center gap-4 text-lg">
               <span className="text-accent">
                 <HiOutlineMail className="text-xl" />
               </span>
-              <span>orkr@gmail.com</span>
+              <span>zeano1215@gmail.com</span>
             </div>
           </div>
           {/* socials */}
