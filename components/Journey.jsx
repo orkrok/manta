@@ -1,18 +1,33 @@
 const journey = [
   {
-    years: "2022 - Present",
-    role: "Web Developer & Designer",
-    institution: "Tech Inc",
+    years: "2025.10 - Present",
+    role: "Security Engineer / PaloAlot XDR",
+    institution: "Cinamon",
   },
   {
-    years: "2020 - 2022",
-    role: "Web Developer",
-    institution: "XYZ Company",
+    years: "2025.06 - 2025.09",
+    role: "VDI Solution Engineer / Internship ",
+    institution: "SOMANSA",
   },
   {
-    years: "2016 - 2020",
+    years: "2024.12 - 2025.06",
+    role: "KT 클라우드와 NHN 클라우도로 완성하는 클라우드 엔지니어 양성 과정",
+    institution: "한국정보교육원",
+  },
+  {
+    years: "2022 - 2023",
+    role: "종자 및 유전자 검사",
+    institution: "국립종자원 충남지원",
+  },
+  {
+    years: "2019.02 - 2019.08",
+    role: "Proficiency",
+    institution: "Kaplan / 어학연수",
+  },
+  {
+    years: "2015.03 - 2021.08",
     role: "Student",
-    institution: "University of Design",
+    institution: "University of Kangwon / Bio-engineering",
   },
 ];
 
