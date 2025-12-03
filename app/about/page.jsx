@@ -57,10 +57,7 @@ const About = () => {
                 <span className="text-accent">Ju-Hyeok</span> Woo
               </h2>
               <p className="max-w-[540px] mb-12">
-                I focus on crafting visually stunning, user-friendly web
-                experiences that not only look great but also function
-                seamlessly, ensuring every detail is carefully designed and
-                executed.
+                안녕하세요
               </p>
 
               <div className="flex flex-col items-start gap-16">
